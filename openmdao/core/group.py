@@ -1374,6 +1374,35 @@ class Group(System):
         if self._conn_discrete_in2out:
             self._vector_class.TRANSFER._setup_discrete_transfers(self, recurse=recurse)
 
+    def promotes(self, subsys_name, any=None, inputs=None, outputs=None):
+        """
+        Parameters
+        ----------
+        subsystem_path : str
+            The name of the child subsystem whose inputs/outputs are being promoted.
+        any : Sequence of str or tuple
+            A Sequence of variable names (or tuples) to be promoted, regardless
+            of if they are inputs or outputs. This is equivalent to the items
+            passed via the `promotes=` argument to add_subsystem.  If given as a
+            tuple, we use the "promote as" standard of ('real name', 'promoted name')*[]:
+        inputs : Sequence of str or tuple
+            A Sequence of input names (or tuples) to be promoted. Tuples are
+            used for the "promote as" capability.
+        outputs : Sequence of str or tuple
+            A Sequence of output names (or tuples) to be promoted. Tuples are
+            used for the "promote as" capability.
+        """
+        # subsys = name
+        subsys = getattr(self, subsys_name)
+        if any:
+            subsys._var_promotes['any'] = any
+        if inputs:
+            subsys._var_promotes['input'] = inputs
+        if outputs:
+            subsys._var_promotes['output'] = outputs
+
+        # check for trying to promote more than one level
+
     def add(self, name, subsys, promotes=None):
         """
         Add a subsystem (deprecated version of <Group.add_subsystem>).
