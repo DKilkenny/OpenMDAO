@@ -74,6 +74,61 @@ class ReportOrderComp(om.ExplicitComponent):
 
 class TestGroup(unittest.TestCase):
 
+    def test_promotes_outputs_in_config(self):
+        """Promoting a single variable."""
+        class SimpleGroup(om.Group):
+
+            def setup(self):
+                super(SimpleGroup, self).setup()
+
+                self.add_subsystem('comp1', om.IndepVarComp('x', 5.0))
+                self.add_subsystem('comp2', om.ExecComp('b=2*a'))
+
+            def configure(self):
+                self.promotes('comp2', outputs=['b'])
+
+        top = om.Problem(model=SimpleGroup())
+        top.setup()
+
+        self.assertEqual(top['b'], 1)
+
+    def test_promotes_inputs_in_config(self):
+        """Promoting a single variable."""
+        class SimpleGroup(om.Group):
+
+            def setup(self):
+                super(SimpleGroup, self).setup()
+
+                self.add_subsystem('comp1', om.IndepVarComp('x', 5.0))
+                self.add_subsystem('comp2', om.ExecComp('b=2*a'))
+
+            def configure(self):
+                self.promotes('comp2', inputs=['a'])
+
+        top = om.Problem(model=SimpleGroup())
+        top.setup()
+
+        self.assertEqual(top['a'], 1)
+
+    def test_promotes_in_config(self):
+        """Promoting a single variable."""
+        class SimpleGroup(om.Group):
+
+            def setup(self):
+                super(SimpleGroup, self).setup()
+
+                self.add_subsystem('comp1', om.IndepVarComp('x', 5.0))
+                self.add_subsystem('comp2', om.ExecComp('b=2*a'))
+
+            def configure(self):
+                self.promotes('comp2', any=['*'])
+
+        top = om.Problem(model=SimpleGroup())
+        top.setup()
+
+        self.assertEqual(top['a'], 1)
+        self.assertEqual(top['b'], 1)
+
     def test_add_subsystem_class(self):
         p = om.Problem()
         try:
