@@ -1392,7 +1392,6 @@ class Group(System):
             A Sequence of output names (or tuples) to be promoted. Tuples are
             used for the "promote as" capability.
         """
-        # subsys = name
         subsys = getattr(self, subsys_name)
         if any:
             subsys._var_promotes['any'] = any
@@ -1400,8 +1399,6 @@ class Group(System):
             subsys._var_promotes['input'] = inputs
         if outputs:
             subsys._var_promotes['output'] = outputs
-
-        # check for trying to promote more than one level
 
     def add(self, name, subsys, promotes=None):
         """
