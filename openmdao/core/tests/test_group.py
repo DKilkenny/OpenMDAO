@@ -97,7 +97,7 @@ class TestSubsystemConfigError(unittest.TestCase):
 class TestGroup(unittest.TestCase):
 
     def test_promotes_outputs_in_config(self):
-        """Promoting a single variable."""
+
         class SimpleGroup(om.Group):
 
             def setup(self):
@@ -119,7 +119,7 @@ class TestGroup(unittest.TestCase):
                          "local variable 'val' referenced before assignment")
 
     def test_promotes_inputs_in_config(self):
-        """Promoting a single variable."""
+
         class SimpleGroup(om.Group):
 
             def setup(self):
@@ -141,7 +141,7 @@ class TestGroup(unittest.TestCase):
                          "local variable 'val' referenced before assignment")
 
     def test_promotes_in_config(self):
-        """Promoting a single variable."""
+
         class SimpleGroup(om.Group):
 
             def setup(self):
@@ -317,6 +317,42 @@ class TestGroup(unittest.TestCase):
 
         self.assertEqual(p['comp1.b'], 6.0)
         self.assertEqual(p['comp2.b'], 9.0)
+
+    def test_promotes_any(self):
+        import openmdao.api as om
+
+        class SimpleGroup(om.Group):
+
+            def setup(self):
+
+                self.add_subsystem('comp1', om.IndepVarComp('x', 5.0))
+                self.add_subsystem('comp2', om.ExecComp('b=2*a'))
+
+            def configure(self):
+                self.promotes('comp1', any=['*'])
+
+        top = om.Problem(model=SimpleGroup())
+        top.setup()
+
+        self.assertEqual(top['x'], 5)
+
+    def test_promotes_inputs_and_outputs(self):
+
+        class SimpleGroup(om.Group):
+
+            def setup(self):
+
+                self.add_subsystem('comp1', om.IndepVarComp('x', 5.0))
+                self.add_subsystem('comp2', om.ExecComp('b=2*a'))
+
+            def configure(self):
+                self.promotes('comp2', inputs=['a'], outputs=['b'])
+
+        top = om.Problem(model=SimpleGroup())
+        top.setup()
+
+        self.assertEqual(top['a'], 1)
+        self.assertEqual(top['b'], 1)
 
     def test_double_promote_conns(self):
         p = om.Problem()
