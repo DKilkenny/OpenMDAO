@@ -59,20 +59,23 @@ def dv_abs_smooth_complex(x, x_deriv, delta_x):
     # Special case when x is (1, ) and x_deriv is (1, n).
     if len(x_deriv.shape) == 1:
         if x[0] >= delta_x:
-            return x_deriv
+            return x, x_deriv
         elif x[0] <= -delta_x:
-            return -x_deriv
+            return -x, -x_deriv
         else:
-            return 2.0 * x[0] * x_deriv / (2.0 * delta_x)
+            return x[0]**2 / (2.0 * delta_x) + delta_x / 2.0, 2.0 * x[0] * x_deriv / (2.0 * delta_x)
 
     y_deriv = 2.0 * x * x_deriv / (2.0 * delta_x)
+    y = x**2 / (2.0 * delta_x) + delta_x / 2.0
     idx_neg = np.where(x <= -delta_x)
     idx_pos = np.where(x >= delta_x)
 
     y_deriv[idx_neg] = -x_deriv[idx_neg]
     y_deriv[idx_pos] = x_deriv[idx_pos]
+    y[idx_neg] = -x[idx_neg]
+    y[idx_pos] = x[idx_pos]
 
-    return y_deriv
+    return y, y_deriv
 
 
 class InterpAkima(InterpAlgorithm):
@@ -146,6 +149,12 @@ class InterpAkima(InterpAlgorithm):
         eps = self.options['eps']
         delta_x = self.options['delta_x']
         nx = len(x)
+
+        # Complex Step
+        if self.values.dtype == np.complex:
+            dtype = self.values.dtype
+        else:
+            dtype = x.dtype
 
         c = 0.0
         d = 0.0
@@ -236,13 +245,13 @@ class InterpAkima(InterpAlgorithm):
 
             nshape = list(values.shape[:-1])
             nshape.append(1)
-            deriv_dx = np.empty(tuple(nshape), dtype=x.dtype)
+            deriv_dx = np.empty(tuple(nshape), dtype=dtype)
             if self.training_data_gradients:
                 n_this = high_idx - low_idx
                 nshape = list(values.shape[:-1])
                 nshape.append(n_this)
                 n_flat = np.prod(nshape)
-                deriv_dv = np.eye(n_flat, dtype=x.dtype)
+                deriv_dv = np.eye(n_flat, dtype=dtype)
 
                 new_shape = []
                 new_shape.extend(nshape)
@@ -356,8 +365,8 @@ class InterpAkima(InterpAlgorithm):
         # Calculate cubic fit coefficients
         if delta_x > 0:
             if compute_local_train:
-                w2, dw2_dv = dv_abs_smooth_complex(m4 - m3, dm4 - dm3, delta_x)
-                w3, dw31_dv = dv_abs_smooth_complex(m2 - m1, dm2 - dm1, delta_x)
+                w2, dw2_dv = dv_abs_smooth_complex(m4 - m3, dm4_dv - dm3_dv, delta_x)
+                w31, dw31_dv = dv_abs_smooth_complex(m2 - m1, dm2_dv - dm1_dv, delta_x)
             else:
                 w2 = abs_smooth_complex(m4 - m3, delta_x)
                 w31 = abs_smooth_complex(m2 - m1, delta_x)
@@ -546,11 +555,11 @@ class InterpAkima(InterpAlgorithm):
 
             # Calculate cubic fit coefficients
             if delta_x > 0:
-                dw2 = dv_abs_smooth_complex(m4 - m3, dm4 - dm3, delta_x)
-                dw3 = dv_abs_smooth_complex(m2 - m1, dm2 - dm1, delta_x)
+                _, dw2 = dv_abs_smooth_complex(m4 - m3, dm4 - dm3, delta_x)
+                _, dw3 = dv_abs_smooth_complex(m2 - m1, dm2 - dm1, delta_x)
                 if self.training_data_gradients:
-                    dw2_dv = dv_abs_smooth_complex(m4 - m3, dm4_dv - dm3_dv, delta_x)
-                    dw3_dv = dv_abs_smooth_complex(m2 - m1, dm2_dv - dm1_dv, delta_x)
+                    _, dw2_dv = dv_abs_smooth_complex(m4 - m3, dm4_dv - dm3_dv, delta_x)
+                    _, dw3_dv = dv_abs_smooth_complex(m2 - m1, dm2_dv - dm1_dv, delta_x)
             else:
                 _, dw2 = dv_abs_complex(m4 - m3, dm4 - dm3)
                 _, dw3 = dv_abs_complex(m2 - m1, dm2 - dm1)
@@ -601,11 +610,11 @@ class InterpAkima(InterpAlgorithm):
                     db_dv[jj1] = dbpos_dv[jj1]
 
             if delta_x > 0:
-                dw3 = dv_abs_smooth_complex(m5 - m4, dm5 - dm4, delta_x)
-                dw4 = dv_abs_smooth_complex(m3 - m2, dm3 - dm2, delta_x)
+                _, dw3 = dv_abs_smooth_complex(m5 - m4, dm5 - dm4, delta_x)
+                _, dw4 = dv_abs_smooth_complex(m3 - m2, dm3 - dm2, delta_x)
                 if self.training_data_gradients:
-                    dw3_dv = dv_abs_smooth_complex(m5 - m4, dm5_dv - dm4_dv, delta_x)
-                    dw4_dv = dv_abs_smooth_complex(m3 - m2, dm3_dv - dm2_dv, delta_x)
+                    _, dw3_dv = dv_abs_smooth_complex(m5 - m4, dm5_dv - dm4_dv, delta_x)
+                    _, dw4_dv = dv_abs_smooth_complex(m3 - m2, dm3_dv - dm2_dv, delta_x)
             else:
                 _, dw3 = dv_abs_complex(m5 - m4, dm5 - dm4)
                 _, dw4 = dv_abs_complex(m3 - m2, dm3 - dm2)
