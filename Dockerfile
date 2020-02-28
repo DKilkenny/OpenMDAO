@@ -1,19 +1,19 @@
 FROM ubuntu as intermediate
 
+ARG SNOPT_LOCATION=None
+
 # install git
 RUN apt-get update
 RUN apt-get install -y git
 
-# add credentials on build
-ARG SSH_PRIVATE_KEY
-RUN mkdir /root/.ssh/
-RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
+RUN cd pyoptsparse/pySNOPT;
+RUN echo "Secure copying SNOPT over SSH";
+RUN scp -r "$SNOPT_LOCATION" .;
+RUN cd ../..;
 
-RUN touch /root/.ssh/known_hosts
-RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
-
-COPY pyopt_script.sh /pyopt_script.sh
-CMD "/pyopt_script.sh"
+RUN echo "FINISHED"
+# COPY pyopt_script.sh /pyopt_script.sh
+# CMD "/pyopt_script.sh"
 
 FROM ubuntu
 
