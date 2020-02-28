@@ -20,3 +20,14 @@ source $HOME/miniconda/bin/activate PY$PY;
 
 echo " >> Installing non-pure Python dependencies from conda";
 conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig;
+
+pip install --upgrade pip;
+
+echo " >> Installing forked python packages";
+pip install git+https://github.com/swryan/coveralls-python@work;
+
+echo " >> Installing pyOptSparse";
+echo "  > Cloning pyOptSparse from mdolab";
+git clone https://github.com/mdolab/pyoptsparse.git;
+cd pyoptsparse;
+git checkout tags/v1.2 -b branchname;
