@@ -31,3 +31,13 @@ echo "  > Cloning pyOptSparse from mdolab";
 git clone https://github.com/mdolab/pyoptsparse.git;
 cd pyoptsparse;
 git checkout tags/v1.2 -b branchname;
+
+if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
+    cd pyoptsparse/pySNOPT;
+    ls;
+fi
+# echo "Secure copying SNOPT over SSH";
+# scp -r "$SNOPT_LOCATION" .;
+# cd ../..;
+
+echo "FINISHED DOCKER BUILD";
