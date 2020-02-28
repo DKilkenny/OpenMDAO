@@ -7,6 +7,30 @@ os:
 
 language: generic
 
+git:
+  depth: 99999
+
+addons:
+  apt:
+    update: true
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gfortran
+    - libblas-dev
+    - liblapack-dev
+    - libopenmpi-dev
+    - openmpi-bin
+    ssh_known_hosts:
+    - web543.webfaction.com
+
+cache:
+  apt: true
+  timeout: 300
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/miniconda
+
 services:
   - docker
 
