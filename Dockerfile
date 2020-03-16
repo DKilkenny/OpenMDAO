@@ -1,5 +1,7 @@
 FROM ubuntu
 
+ENV YOURAPP_ENV="${SNOPT}"
+
 COPY basic_shell_script.sh /basic_shell_script.sh
 
 RUN  apt-get update \
@@ -16,4 +18,4 @@ RUN ["echo", "git --version"]
 
 CMD "/basic_shell_script.sh"
 
-RUN echo $SNOPT
+RUN echo YOURAPP_ENV
