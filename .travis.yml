@@ -44,7 +44,8 @@ before_install:
       echo -e "Host web543.webfaction.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config;
     fi
 
-  - docker build -t travis_docker . --build_arg=$SNOPT_LOCATION && docker run -it travis_docker
+  - docker build -t travis_docker .
+  - docker run -it travis_docker
 
 # install:
 
