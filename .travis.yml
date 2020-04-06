@@ -30,10 +30,9 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - gfortran
-    - libblas-dev
-    - liblapack-dev
-    - libopenmpi-dev
-    - openmpi-bin
+    - gcc
+    - g++
+    - build-essential
     ssh_known_hosts:
     - web543.webfaction.com
 
@@ -99,7 +98,8 @@ install:
     source $HOME/miniconda/bin/activate PY$PY;
 
     echo " >> Installing non-pure Python dependencies from conda";
-    conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig;
+    conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
+    conda install -c conda-forge petsc=$PETSc, petsc4py;
 
     pip install --upgrade pip;
 
@@ -126,15 +126,6 @@ install:
 
     echo " >> Installing optional packages for test coverage";
     pip install psutil objgraph git+https://github.com/mdolab/pyxdsm;
-
-    if [ "$PETSc" ]; then
-      echo " >> Installing parallel processing dependencies";
-      if [[ "$PETSc" == "git"* ]]; then
-        pip install $PETSc;
-      else
-        pip install petsc4py==$PETSc;
-      fi
-    fi
 
   fi
 
