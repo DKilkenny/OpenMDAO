@@ -111,7 +111,6 @@ install:
     echo " >> Installing optional packages for test coverage";
     pip install psutil objgraph git+https://github.com/mdolab/pyxdsm;
 
-  fi
 
 # install OpenMDAO and its development and documentation dependencies
 # NOTE: not using -e on purpose here, to catch packaging errors
