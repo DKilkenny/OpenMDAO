@@ -55,17 +55,6 @@ before_install:
 # Travis unhelpfully creates it, which then causes "dir already exists"
 # errors when you go to actually install the thing, so we must non-intuitively
 # delete the file before re-creating it later.
-- if  [ "$TRAVIS_REPO_SLUG" = "OpenMDAO/OpenMDAO" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    echo "building master";
-    MASTER_BUILD=1;
-    rm -rf $HOME/miniconda;
-  elif [ -d $HOME/miniconda/envs/PY$PY ]; then
-    echo "cached miniconda environment found";
-    CACHED_ENV=1;
-  else
-    echo "cached miniconda environment not found";
-    rm -rf $HOME/miniconda;
-  fi
 
 install:
 # get key decrypted, placed, chmodded, and added for passwordless access to WebFaction
@@ -79,11 +68,6 @@ install:
 
 # if we don't have a cached conda environment then build one, otherwise just activate the cached one
 - |
-  if [ "$CACHED_ENV" ]; then
-    echo ">>> Using cached environment";
-    export PATH=$HOME/miniconda/bin:$PATH;
-    source $HOME/miniconda/bin/activate PY$PY;
-  else
     echo ">>> Building python environment";
     echo " >> Installing conda";
     echo "  > Downloading miniconda";
