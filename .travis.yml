@@ -59,53 +59,53 @@ install:
     ssh-add /tmp/travis_deploy_rsa;
     echo -e "Host web543.webfaction.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config;
   else
-    echo "KEY NOT FOUND"
+    echo "KEY NOT FOUND";
   fi
 
 # if we don't have a cached conda environment then build one, otherwise just activate the cached one
 - |
-    echo ">>> Building python environment";
-    echo " >> Installing conda";
-    echo "  > Downloading miniconda";
-    wget "https://repo.anaconda.com/miniconda/Miniconda${PY:0:1}-latest-Linux-x86_64.sh" -O miniconda.sh;
-    chmod +x miniconda.sh;
-    echo "  > Installing miniconda";
-    ./miniconda.sh -b  -p $HOME/miniconda;
-    export PATH=$HOME/miniconda/bin:$PATH;
+  echo ">>> Building python environment";
+  echo " >> Installing conda";
+  echo "  > Downloading miniconda";
+  wget "https://repo.anaconda.com/miniconda/Miniconda${PY:0:1}-latest-Linux-x86_64.sh" -O miniconda.sh;
+  chmod +x miniconda.sh;
+  echo "  > Installing miniconda";
+  ./miniconda.sh -b  -p $HOME/miniconda;
+  export PATH=$HOME/miniconda/bin:$PATH;
 
-    echo " >> Creating conda environment";
-    conda create --yes -n PY$PY python=$PY;
-    source $HOME/miniconda/bin/activate PY$PY;
+  echo " >> Creating conda environment";
+  conda create --yes -n PY$PY python=$PY;
+  source $HOME/miniconda/bin/activate PY$PY;
 
-    echo " >> Installing non-pure Python dependencies from conda";
-    conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
-    conda install -c conda-forge petsc=$PETSc, petsc4py;
+  echo " >> Installing non-pure Python dependencies from conda";
+  conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
+  conda install -c conda-forge petsc=$PETSc, petsc4py;
 
-    pip install --upgrade pip;
+  pip install --upgrade pip;
 
-    echo " >> Installing forked python packages";
-    pip install git+https://github.com/swryan/coveralls-python@work;
+  echo " >> Installing forked python packages";
+  pip install git+https://github.com/swryan/coveralls-python@work;
 
-    echo " >> Installing pyOptSparse";
-    echo "  > Cloning pyOptSparse from mdolab";
-    git clone https://github.com/mdolab/pyoptsparse.git;
-    cd pyoptsparse;
-    git checkout tags/v1.2;
+  echo " >> Installing pyOptSparse";
+  echo "  > Cloning pyOptSparse from mdolab";
+  git clone https://github.com/mdolab/pyoptsparse.git;
+  cd pyoptsparse;
+  git checkout tags/v1.2;
 
-    if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
-      cd pyoptsparse/pySNOPT;
-      echo "  > Secure copying SNOPT over SSH";
-      scp -r "$SNOPT_LOCATION" .;
-      cd ../..;
-    fi
+  if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
+    cd pyoptsparse/pySNOPT;
+    echo "  > Secure copying SNOPT over SSH";
+    scp -r "$SNOPT_LOCATION" .;
+    cd ../..;
+  fi
 
-    echo "  > Install pyOptSparse";
-    pip install -r requirements.txt;
-    pip install .;
-    cd ..;
+  echo "  > Install pyOptSparse";
+  pip install -r requirements.txt;
+  pip install .;
+  cd ..;
 
-    echo " >> Installing optional packages for test coverage";
-    pip install psutil objgraph git+https://github.com/mdolab/pyxdsm;
+  echo " >> Installing optional packages for test coverage";
+  pip install psutil objgraph git+https://github.com/mdolab/pyxdsm;
 
 
 # install OpenMDAO and its development and documentation dependencies
