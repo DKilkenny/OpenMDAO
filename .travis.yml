@@ -74,7 +74,7 @@ install:
   export PATH=$HOME/miniconda/bin:$PATH;
 
   echo " >> Creating conda environment";
-  conda create --yes -n PY$PY python=$PY numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
+  conda create --yes -n PY$PY python=$PY numpy=$NUMPY scipy=$SCIPY cython swig;
   source $HOME/miniconda/bin/activate PY$PY;
 
   echo " >> Installing non-pure Python dependencies from conda";
