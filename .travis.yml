@@ -79,7 +79,7 @@ install:
 
   echo " >> Installing non-pure Python dependencies from conda";
   conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
-  conda install -c conda-forge petsc=$PETSc, petsc4py;
+  conda install -c conda-forge petsc=$PETSc petsc4py;
 
   pip install --upgrade pip;
 
