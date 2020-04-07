@@ -83,7 +83,7 @@ install:
     echo "Installing PETSc"
     conda install -c conda-forge petsc=$PETSc petsc4py --yes;
   else
-    conda install -c conda-forge petsc4py
+    conda install -c conda-forge petsc4py;
   fi
 
 - |
