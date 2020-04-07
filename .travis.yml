@@ -2,8 +2,6 @@ branches:
   only:
   - master
 
-sudo: false
-
 group: deprecated-2017Q4
 
 filter_secrets: false
@@ -32,7 +30,6 @@ addons:
     - gfortran
     - gcc
     - g++
-    - build-essential
     ssh_known_hosts:
     - web543.webfaction.com
 
@@ -83,8 +80,6 @@ install:
     echo "Installing PETSc";
     conda install -c anaconda mpi4py --yes;
     conda install -c conda-forge petsc=$PETSc petsc4py --yes;
-  else
-    conda install -c conda-forge openmpi liblapack libblas --yes;
   fi
 
 - |
