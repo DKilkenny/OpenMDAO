@@ -74,12 +74,11 @@ install:
   export PATH=$HOME/miniconda/bin:$PATH;
 
   echo " >> Creating conda environment";
-  conda create --yes -n PY$PY python=$PY;
+  conda create --yes -n PY$PY python=$PY numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
   source $HOME/miniconda/bin/activate PY$PY;
 
   echo " >> Installing non-pure Python dependencies from conda";
-  conda install --yes numpy=$NUMPY scipy=$SCIPY cython swig mpi4py;
-  conda install -c conda-forge petsc=$PETSc petsc4py;
+  conda install -c conda-forge petsc=$PETSc petsc4py --yes;
 
   pip install --upgrade pip;
 
