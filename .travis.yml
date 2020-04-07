@@ -83,7 +83,10 @@ install:
     echo "Installing PETSc";
     conda install -c conda-forge petsc=$PETSc petsc4py --yes;
   else
-    conda install -c conda-forge petsc4py --yes;
+    apt-get install -yq --no-install-suggests --no-install-recommends libblas-dev
+    apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev
+    apt-get install -yq --no-install-suggests --no-install-recommends libopenmpi-dev
+    apt-get install -yq --no-install-suggests --no-install-recommends openmpi-bin
   fi
 
 - |
