@@ -81,6 +81,7 @@ install:
 
 - if [ "$PETSc" ]; then
     echo "Installing PETSc";
+    conda install -c anaconda mpi4py --yes;
     conda install -c conda-forge petsc=$PETSc petsc4py --yes;
   else
     conda install -c conda-forge openmpi liblapack libblas --yes;
