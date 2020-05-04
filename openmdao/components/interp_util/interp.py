@@ -241,9 +241,9 @@ class InterpND(object):
             d_dvalues = self.spline_gradient()
             if d_dvalues.shape[0] == 1:
                 d_dvalues = d_dvalues[0]
-            return result, d_dvalues
+            return result.flatten(), d_dvalues
         else:
-            return result
+            return result.flatten()
 
     def _interpolate(self, xi):
         """
