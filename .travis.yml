@@ -103,6 +103,7 @@ install:
   git clone https://gist.github.com/b34594cc2a4468e9d215cef2f4187b71.git pyopt_ipopt_install;
   cd pyopt_ipopt_install;
   chmod 755 ./build_pyoptsparse_ipopt.sh; ./build_pyoptsparse_ipopt.sh;
+  ls -ltr;
   cd ..;
 
 
