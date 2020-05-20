@@ -101,7 +101,7 @@ install:
   echo " >> Installing pyOptSparse";
   git clone https://gist.github.com/b34594cc2a4468e9d215cef2f4187b71.git pyopt_ipopt_script.sh;
   ls -ltr;
-  chmod 755 ./pyopt_ipopt_script.sh; ./pyopt_ipopt_script.sh;
+  chmod 755 pyopt_ipopt_script.sh; pyopt_ipopt_script.sh;
 
   if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
     cd pyoptsparse/pySNOPT;
