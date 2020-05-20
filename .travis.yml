@@ -108,13 +108,13 @@ install:
 
 
   if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
+    cd pyopt_ipopt_install;
     ls -ltr;
     cd pyoptsparse;
     ls -ltr;
     cd pyoptsparse;
     ls -ltr;
     cd pySNOPT;
-    cd pyoptsparse/pyoptsparse/pySNOPT;
     echo "  > Secure copying SNOPT over SSH";
     scp -r "$SNOPT_LOCATION" .;
     cd ../../..;
