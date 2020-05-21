@@ -106,7 +106,7 @@ install:
 
   if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
     echo " >> Installing SNOPT";
-    cd pyopt_ipopt_install/pyoptsparse/pyoptsparse/pySNOPT;
+    cd pyoptsparse/pyoptsparse/pySNOPT;
     pwd;
     ls -ltr
     echo "  > Secure copying SNOPT over SSH";
