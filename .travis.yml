@@ -110,10 +110,7 @@ install:
     cd pyoptsparse/pyoptsparse/pySNOPT;
     echo "  > Secure copying SNOPT over SSH";
     scp -r "$SNOPT_LOCATION" .;
-    pwd;
-    ls -ltr;
     cd ../../..;
-    pwd;
   fi
 
   echo "  > Install pyOptSparse";
