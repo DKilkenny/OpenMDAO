@@ -117,7 +117,7 @@ install:
     scp -r "$SNOPT_LOCATION" .;
     pwd;
     ls -ltr;
-    cd ../../..;
+    cd ../..;
     pwd;
   fi
 
