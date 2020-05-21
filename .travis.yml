@@ -112,9 +112,10 @@ install:
     cd pyopt_ipopt_install/pyoptsparse/pyoptsparse/pySNOPT;
     pwd;
     ls -ltr
-    Look into the dir levels
     echo "  > Secure copying SNOPT over SSH";
     scp -r "$SNOPT_LOCATION" .;
+    pwd;
+    ls -ltr
     cd ../../..;
   fi
 
