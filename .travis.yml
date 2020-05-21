@@ -113,10 +113,9 @@ install:
     pwd;
     ls -ltr
     echo "  > Secure copying SNOPT over SSH";
-    scp -r "$SNOPT_LOCATION";
+    scp -r "$SNOPT_LOCATION" .;
     pwd;
     ls -ltr;
-    make install;
     cd ../../..;
     pwd;
   fi
