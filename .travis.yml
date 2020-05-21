@@ -103,8 +103,18 @@ install:
   git clone https://gist.github.com/b34594cc2a4468e9d215cef2f4187b71.git pyopt_ipopt_install;
   cd pyopt_ipopt_install;
   chmod 755 ./build_pyoptsparse_ipopt.sh; ./build_pyoptsparse_ipopt.sh;
+  cd pyoptsparse;
 
-
+  if [ "$SNOPT_LOCATION" ] && [ "${PY:0:1}" = "3" ]; then
+    echo " >> Installing SNOPT";
+    cd pyopt_ipopt_install/pyoptsparse/pyoptsparse/pySNOPT;
+    echo "  > Secure copying SNOPT over SSH";
+    scp -r "$SNOPT_LOCATION" .;
+    pwd;
+    ls -ltr;
+    cd ../../..;
+    pwd;
+  fi
 
   echo "  > Install pyOptSparse";
   pip install -r requirements.txt;
