@@ -102,7 +102,7 @@ install:
   echo " >> Installing pyOptSparse";
   git clone -b patchfix https://github.com/tadkollar/build_pyoptsparse_ipopt;
   ls -ltr;
-  cd build_pyoptsparse;
+  cd build_pyoptsparse_ipopt;
   ls -ltr;
   chmod 755 ./build_pyoptsparse.sh;
 
