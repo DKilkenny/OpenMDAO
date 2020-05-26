@@ -100,7 +100,7 @@ install:
   pip install git+https://github.com/swryan/coveralls-python@work;
 
   echo " >> Installing pyOptSparse";
-  git clone https://github.com/tadkollar/build_pyoptsparse_ipopt/tree/patchfix;
+  git clone http://github.com/tadkollar/build_pyoptsparse_ipopt/tree/patchfix;
   cd build_pyoptsparse;
   chmod 755 ./build_pyoptsparse.sh;
 
