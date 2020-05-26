@@ -104,10 +104,10 @@ install:
   cd build_pyoptsparse;
   chmod 755 ./build_pyoptsparse.sh;
 
-  if [ "$SNOPT_LOCATION" ]; then
+  if [ "$SNOPT_LOCATION72" ]; then
     echo "  > Secure copying SNOPT over SSH";
     mkdir SNOPT;
-    scp -r "$SNOPT_LOCATION" SNOPT;
+    scp -r "$SNOPT_LOCATION72" SNOPT;
     ./build_pyoptsparse.sh -s SNOPT/source;
   else
     ./build_pyoptsparse.sh;
