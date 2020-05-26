@@ -114,12 +114,6 @@ install:
   fi
   cd ..;
 
-  echo "  > Install pyOptSparse";
-  cd pyoptsparse;
-  pip install -r requirements.txt;
-  pip install .;
-  cd ..;
-
   echo " >> Installing optional packages for test coverage";
   pip install psutil objgraph git+https://github.com/mdolab/pyxdsm;
 
