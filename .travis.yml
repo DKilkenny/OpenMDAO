@@ -101,7 +101,9 @@ install:
 
   echo " >> Installing pyOptSparse";
   git clone http://github.com/tadkollar/build_pyoptsparse_ipopt/tree/patchfix;
+  ls -ltr
   cd build_pyoptsparse_ipopt;
+  ls -ltr;
   chmod 755 ./build_pyoptsparse.sh;
 
   if [ "$SNOPT_LOCATION77" ]; then
