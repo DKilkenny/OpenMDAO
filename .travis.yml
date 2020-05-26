@@ -100,18 +100,19 @@ install:
   pip install git+https://github.com/swryan/coveralls-python@work;
 
   echo " >> Installing pyOptSparse";
-  git clone http://github.com/tadkollar/build_pyoptsparse_ipopt/tree/patchfix;
-  ls -ltr
-  chmod 755 ./build_pyoptsparse_ipopt.sh;
+  git clone -b patchfix https://github.com/tadkollar/build_pyoptsparse_ipopt;
+  cd build_pyoptsparse;
+  chmod 755 ./build_pyoptsparse.sh;
 
   if [ "$SNOPT_LOCATION77" ]; then
     echo "  > Secure copying SNOPT over SSH";
     mkdir SNOPT;
     scp -r "$SNOPT_LOCATION77" SNOPT;
-    ./build_pyoptsparse_ipopt.sh -s SNOPT -b v2.1.0;
+    ./build_pyoptsparse.sh -s SNOPT -b v2.1.0;
   else
-    ./build_pyoptsparse_ipopt.sh -b v2.1.0;
+    ./build_pyoptsparse.sh -b v2.1.0;
   fi
+  cd ..;
 
   echo " >> Installing optional packages for test coverage";
   pip install psutil objgraph git+https://github.com/mdolab/pyxdsm;
