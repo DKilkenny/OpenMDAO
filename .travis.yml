@@ -108,18 +108,18 @@ install:
 
   echo " >> Checking "
   if [ "$SNOPT_VERSION" = "7.7" & "$PYOPTSPARSE_VERSION" = "v2.1.0"] || ["$SNOPT_VERSION" = "7.2" & "$PYOPTSPARSE_VERSION" = "v1.2"]; then
-    if ["$SNOPT_VERSION" = "7.7" & "SNOPT_LOCATION_77"]; then
+    if ["$SNOPT_VERSION" = "7.7" & "$SNOPT_LOCATION_77"]; then
       echo "  > Secure copying SNOPT 7.7 over SSH";
       mkdir SNOPT;
       scp -r "$SNOPT_LOCATION_77" SNOPT;
-      ./build_pyoptsparse.sh -s SNOPT -b PYOPTSPARSE_VERSION;
-    elif ["$SNOPT_VERSION" = "7.2" & "SNOPT_LOCATION_72"]; then
+      ./build_pyoptsparse.sh -s SNOPT -b $PYOPTSPARSE_VERSION;
+    elif ["$SNOPT_VERSION" = "7.2" & "$SNOPT_LOCATION_72"]; then
       echo "  > Secure copying SNOPT 7.2 over SSH";
       mkdir SNOPT;
       scp -r "$SNOPT_LOCATION_72" SNOPT;
-      ./build_pyoptsparse.sh -s SNOPT -b PYOPTSPARSE_VERSION;
+      ./build_pyoptsparse.sh -s SNOPT -b $PYOPTSPARSE_VERSION;
     else
-      ./build_pyoptsparse.sh -b PYOPTSPARSE_VERSION;
+      ./build_pyoptsparse.sh -b $PYOPTSPARSE_VERSION;
     fi
   else
     echo "Incompatible versions of SNOPT and PyoptSparse"
