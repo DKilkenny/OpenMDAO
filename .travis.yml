@@ -105,14 +105,15 @@ install:
   chmod 755 ./build_pyoptsparse.sh;
 
   echo " >> Checking SNOPT and PyoptSparse version"
-  if [ "$SNOPT_VERSION" == "7.7" & "$PYOPTSPARSE_VERSION" == "v2.1.0" ] || [ "$SNOPT_VERSION" == "7.2" & "$PYOPTSPARSE_VERSION" == "v1.2" ]; then
-    if [ "$SNOPT_VERSION" == "7.7" & "$SNOPT_LOCATION_77" ]; then
+  if [ "$SNOPT_VERSION" == "7.7" && "$PYOPTSPARSE_VERSION" == "v2.1.0" ] || [ "$SNOPT_VERSION" == "7.2" && "$PYOPTSPARSE_VERSION" == "v1.2" ]; then
+    echo " >> Found SNOPT and PyoptSparse"
+    if [ "$SNOPT_VERSION" == "7.7" && "$SNOPT_LOCATION_77" ]; then
       echo "  > Secure copying SNOPT 7.7 over SSH";
       mkdir SNOPT;
       scp -r "$SNOPT_LOCATION_77" SNOPT;
       ./build_pyoptsparse.sh -s SNOPT -b "$PYOPTSPARSE_VERSION";
 
-    elif [ "$SNOPT_VERSION" == "7.2" & "$SNOPT_LOCATION_72" ]; then
+    elif [ "$SNOPT_VERSION" == "7.2" && "$SNOPT_LOCATION_72" ]; then
       echo "  > Secure copying SNOPT 7.2 over SSH";
       mkdir SNOPT;
       scp -r "$SNOPT_LOCATION_72" SNOPT;
