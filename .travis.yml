@@ -123,6 +123,7 @@ install:
     fi
   else
     echo "Incompatible versions of SNOPT and PyoptSparse"
+
   fi
   cd ..;
 
