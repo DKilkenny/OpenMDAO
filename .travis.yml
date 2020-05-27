@@ -14,9 +14,8 @@ language: generic
 env:
   matrix:
     # test with the latest version of Python 3.x
-    - PY=3   NUMPY=1.18 SCIPY=1.4 PETSc=3.12 UPLOAD_DOCS=1 SNOPT_VERSION=7.7 PYOPTSPARSE_VERSION=v2.1.0
+    - PY=3.7 NUMPY=1.17 SCIPY=1.3 SNOPT_VERSION=7.2 PYOPTSPARSE_VERSION=v1.2
     - PY=3.7 NUMPY=1.17 SCIPY=1.3 SNOPT_VERSION=7.7 PYOPTSPARSE_VERSION=v2.1.0
-    - PY=3.6 NUMPY=1.16 SCIPY=1.2 PETSc=3.10.2 SNOPT_VERSION=7.7 PYOPTSPARSE_VERSION=v2.1.0
 
 git:
   depth: 99999
@@ -61,8 +60,8 @@ before_install:
 
 install:
 # get key decrypted, placed, chmodded, and added for passwordless access to WebFaction
-- if [ "$encrypted_da0e548c2e00_key" ]; then
-    openssl aes-256-cbc -K $encrypted_da0e548c2e00_key -iv $encrypted_da0e548c2e00_iv -in travis_deploy_rsa.enc -out /tmp/travis_deploy_rsa -d;
+- if [ "$encrypted_74d70a284b7d_key" ]; then
+    openssl aes-256-cbc -K $encrypted_74d70a284b7d_key -iv $encrypted_74d70a284b7d_iv -in travis_deploy_rsa.enc -out /tmp/travis_deploy_rsa -d;
     eval "$(ssh-agent -s)";
     chmod 600 /tmp/travis_deploy_rsa;
     ssh-add /tmp/travis_deploy_rsa;
@@ -100,8 +99,8 @@ install:
   pip install git+https://github.com/swryan/coveralls-python@work;
 
   echo " >> Installing pyOptSparse";
-  git clone -b patchfix https://github.com/tadkollar/build_pyoptsparse_ipopt;
-  cd build_pyoptsparse_ipopt;
+  git clone https://github.com/OpenMDAO/build_pyoptsparse;
+  cd build_pyoptsparse;
   chmod 755 ./build_pyoptsparse.sh;
 
   echo " >> Checking SNOPT and PyoptSparse version"
@@ -111,13 +110,13 @@ install:
       echo "  > Secure copying SNOPT 7.7 over SSH";
       mkdir SNOPT;
       scp -r "$SNOPT_LOCATION_77" SNOPT;
-      ./build_pyoptsparse.sh -s SNOPT -b "$PYOPTSPARSE_VERSION";
+      ./build_pyoptsparse.sh -s SNOPT/src -b "$PYOPTSPARSE_VERSION";
 
     elif [ "$SNOPT_VERSION" == "7.2" ]  && [ "$SNOPT_LOCATION_72" ]; then
       echo "  > Secure copying SNOPT 7.2 over SSH";
       mkdir SNOPT;
       scp -r "$SNOPT_LOCATION_72" SNOPT;
-      ./build_pyoptsparse.sh -s SNOPT -b "$PYOPTSPARSE_VERSION";
+      ./build_pyoptsparse.sh -s SNOPT/source -b "$PYOPTSPARSE_VERSION";
 
     else
       ./build_pyoptsparse.sh -b "$PYOPTSPARSE_VERSION";
