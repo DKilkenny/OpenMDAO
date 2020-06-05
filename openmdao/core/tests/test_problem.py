@@ -1571,6 +1571,45 @@ class TestProblem(unittest.TestCase):
                 ('comp3.y',   {'value': [5.]})
             ], "Outputs don't match when added in %s." % where)
 
+    def test_configure_list_inputs_outputs(self):
+        class MyComp(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('a', val=0.)
+                self.add_output('a2', val=0.)
+
+            def compute(self, inputs, outputs):
+                outputs['a2'] = inputs['a'] * 2.
+                if 'b' in inputs:
+                    outputs['b2'] = inputs['b'] * 2.
+
+        class Model(om.Group):
+            def initialize(self):
+                self.options.declare('add_b2', default=False)
+
+            def setup(self):
+                self.add_subsystem('indep', om.IndepVarComp(), promotes=['*'])
+                self.add_subsystem('mcomp', MyComp(), promotes=['*'])
+
+                self.add_subsystem('sub', om.Group(), promotes_inputs=['*'])
+                self.sub.add_subsystem('mcomp', MyComp(), promotes=['*'])
+
+                self.indep.add_output('a', val=2.0)
+
+            def configure(self):
+                if self.options['add_b2']:
+                    self.indep.add_output('b', val=3.0)
+
+                    self.mcomp.add_input('b', val=0.)
+                    self.mcomp.add_output('b2', val=0.)
+
+                    self.sub.mcomp.add_input('b', val=0.)
+                    self.sub.mcomp.add_output('b2', val=0.)
+
+
+        p = om.Problem(Model(add_b2=True))
+        p.model.configure()
+        p.model.list_inputs()
+
     def test_configure_add_input_output(self):
         # add inputs and outputs to an ExplicitComponent in Group configure
 
