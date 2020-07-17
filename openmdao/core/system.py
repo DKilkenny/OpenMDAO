@@ -101,6 +101,8 @@ class System(object):
         Problem level metadata.
     under_complex_step : bool
         When True, this system is undergoing complex step.
+    under_approx : bool
+        When True, this system is undergoing approximation.
     iter_count : int
         Int that holds the number of times this system has iterated
         in a recording run.
