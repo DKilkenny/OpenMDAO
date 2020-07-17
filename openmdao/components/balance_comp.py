@@ -257,7 +257,8 @@ class BalanceComp(ImplicitComponent):
             self.options['guess_func'](inputs, outputs, residuals)
 
     def add_balance(self, name, eq_units=None, lhs_name=None, rhs_name=None, rhs_val=0.0,
-                    use_mult=False, mult_name=None, mult_val=1.0, normalize=True, **kwargs):
+                    use_mult=False, mult_name=None, mult_val=1.0, normalize=True, val=None,
+                    **kwargs):
         """
         Add a new state variable and associated equation to be balanced.
 
@@ -293,6 +294,8 @@ class BalanceComp(ImplicitComponent):
         normalize : bool
             Specifies whether or not the resulting residual should be normalized by a quadratic
             function of the RHS.
+        val : float
+            Set initial value for the state.
         **kwargs : dict
             Additional arguments to be passed for the creation of the implicit state variable.
             (see `add_output` method).
@@ -308,6 +311,9 @@ class BalanceComp(ImplicitComponent):
                    'normalize': normalize}
 
         self._state_vars[name] = options
+
+        if val is not None:
+            options['kwargs'] = {'val': val}
 
         meta = self.add_output(name, **options['kwargs'])
 
