@@ -30,7 +30,7 @@ class BalanceComp(ImplicitComponent):
                              'residuals.')
 
     def __init__(self, name=None, eq_units=None, lhs_name=None, rhs_name=None, rhs_val=0.0,
-                 use_mult=False, mult_name=None, mult_val=1.0, normalize=True, **kwargs):
+                 use_mult=False, mult_name=None, mult_val=1.0, normalize=True, val=None, **kwargs):
         r"""
         Initialize a BalanceComp, optionally creating a new implicit state variable.
 
@@ -125,6 +125,8 @@ class BalanceComp(ImplicitComponent):
         normalize : bool
             Specifies whether or not the resulting residual should be normalized by a quadratic
             function of the RHS.
+        val : float or np.ndarray
+            Set initial value for the state.
         **kwargs : dict
             Additional arguments to be passed for the creation of the implicit state variable.
             (see `add_output` method).
@@ -139,7 +141,7 @@ class BalanceComp(ImplicitComponent):
 
         if name is not None:
             self.add_balance(name, eq_units, lhs_name, rhs_name, rhs_val,
-                             use_mult, mult_name, mult_val, normalize, **kwargs)
+                             use_mult, mult_name, mult_val, normalize, val, **kwargs)
 
     def apply_nonlinear(self, inputs, outputs, residuals):
         """
@@ -294,7 +296,7 @@ class BalanceComp(ImplicitComponent):
         normalize : bool
             Specifies whether or not the resulting residual should be normalized by a quadratic
             function of the RHS.
-        val : float
+        val : float or np.ndarray
             Set initial value for the state.
         **kwargs : dict
             Additional arguments to be passed for the creation of the implicit state variable.
