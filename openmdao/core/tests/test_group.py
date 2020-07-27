@@ -716,7 +716,7 @@ class TestGroup(unittest.TestCase):
     def test_om_slice_negative_stop(self):
         class MyComp1(om.ExplicitComponent):
             def setup(self):
-                self.add_input('x', np.ones(4), src_indices=om.slicer[:,-1])
+                self.add_input('x', np.ones(4), src_indices=om.slicer[:, -1])
                 self.add_output('y', 1.0)
 
             def compute(self, inputs, outputs):
@@ -756,6 +756,245 @@ class TestGroup(unittest.TestCase):
         p.run_model()
 
         assert_near_equal(p['C1.x'], np.array([6, 22, 38, 54]))
+
+    def test_om_slice_with_ellipsis_in_connect(self):
+        class MyComp1(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('x', shape=(4,))
+                self.add_output('y', 1.0)
+
+            def compute(self, inputs, outputs):
+                outputs['y'] = np.sum(inputs['x'])*2.0
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13],
+                        [20, 21, 22, 23],
+                        [30, 31, 32, 33]])
+
+        p = om.Problem()
+
+        p.model.add_subsystem('indep', om.IndepVarComp('x', arr))
+        p.model.add_subsystem('row1_comp', MyComp1())
+        p.model.add_subsystem('row4_comp', MyComp1())
+
+        p.model.connect('indep.x', 'row1_comp.x', src_indices=om.slicer[0, ...])
+        p.model.connect('indep.x', 'row4_comp.x', src_indices=om.slicer[3, ...])
+
+        p.setup()
+        p.run_model()
+
+        assert_near_equal(p['row1_comp.x'], arr[0, ...])
+        assert_near_equal(p['row4_comp.x'], arr[3, ...])
+
+    def test_om_slice_with_ellipsis_in_promotes(self):
+
+        arr = np.array([[0,  1,  2,  3],
+                        [10, 11, 12, 13],
+                        [20, 21, 22, 23],
+                        [30, 31, 32, 33]])
+
+        p = om.Problem()
+
+        model = p.model
+        model.add_subsystem('indep', om.IndepVarComp('a', arr), promotes=['*'])
+        model.add_subsystem('comp1', om.ExecComp('b=2*a', a=np.ones(4), b=np.ones(4)))
+        model.add_subsystem('comp2', om.ExecComp('b=2*a', a=np.ones(4), b=np.ones(4)))
+        model.add_subsystem('comp3', om.ExecComp('b=2*a', a=np.ones(4), b=np.ones(4)))
+
+        model.promotes('comp1', inputs=['a'], src_indices=om.slicer[0, ...])
+        model.promotes('comp2', inputs=['a'], src_indices=om.slicer[3, ...])
+        model.promotes('comp3', inputs=['a'], src_indices=om.slicer[..., 3])
+
+        p.setup()
+        p.run_model()
+
+        assert_near_equal(p['comp1.a'], np.array([0,  1,  2,  3]))
+        assert_near_equal(p['comp2.a'], np.array([30, 31, 32, 33]))
+        assert_near_equal(p['comp3.a'], np.array([ 3, 13, 23, 33]))
+
+    def test_om_slice_with_ellipsis_in_desvar(self):
+
+        class MyComp(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('x', np.ones(4))
+                self.add_output('y', 1.0)
+
+            def compute(self, inputs, outputs):
+                outputs['y'] = np.sum(inputs['x'])**2.0
+
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('indep', om.IndepVarComp('x', arr))
+        p.model.add_subsystem('C1', MyComp())
+        p.model.connect('indep.x', 'C1.x', src_indices=om.slicer[1, ...])
+        p.model.add_design_var('indep.x', indices=om.slicer[1, ...])
+
+        p.model.add_objective('C1.y')
+
+        p.setup()
+        p.run_model()
+
+        assert_near_equal(arr[p.model._design_vars['indep.x']['indices']][0], 10)
+
+    def test_om_slice_with_ellipsis_in_add_response(self):
+
+        class MyComp(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('x', np.ones(4))
+                self.add_output('y', 1.0)
+
+            def compute(self, inputs, outputs):
+                outputs['y'] = np.sum(inputs['x'])**2.0
+
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('indep', om.IndepVarComp('x', arr))
+        p.model.add_subsystem('C1', MyComp())
+        p.model.connect('indep.x', 'C1.x', src_indices=om.slicer[1, ...])
+        p.model.add_response('indep.x', type_='con', indices=om.slicer[1, ...])
+
+        p.model.add_objective('C1.y')
+
+        p.setup()
+        p.run_model()
+
+        assert_near_equal(arr[tuple(p.model._responses['indep.x']['indices'])],
+                          np.array([10, 11, 12, 13]))
+        self.assertTrue(p.model._responses['indep.x']['indices'][0], 1)
+        self.assertTrue(p.model._responses['indep.x']['indices'][1], ...)
+
+    def test_om_slice_with_ellipsis_in_add_response2(self):
+
+        class MyComp(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('x', np.ones(4))
+                self.add_output('y', 1.0)
+
+            def compute(self, inputs, outputs):
+                outputs['y'] = np.sum(inputs['x'])**2.0
+
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('indep', om.IndepVarComp('x', arr))
+        p.model.add_subsystem('C1', MyComp())
+        p.model.connect('indep.x', 'C1.x', src_indices=om.slicer[1, ...])
+        p.model.add_response('indep.x', type_='con', indices=om.slicer[1, ...])
+
+        p.model.add_objective('C1.y')
+
+        p.setup()
+        p.run_model()
+
+        assert_near_equal(arr[tuple(p.model._responses['indep.x']['indices'])][0], 10)
+        self.assertTrue(p.model._responses['indep.x']['indices'][0], 1)
+        self.assertTrue(p.model._responses['indep.x']['indices'][1], ...)
+
+    def test_om_slice_with_ellipsis_in_add_constraint(self):
+
+        class MyComp(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('x', np.ones(4))
+                self.add_output('y', 1.0)
+
+            def compute(self, inputs, outputs):
+                outputs['y'] = np.sum(inputs['x'])**2.0
+
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('indep', om.IndepVarComp('x', arr))
+        p.model.add_subsystem('C1', MyComp())
+        p.model.connect('indep.x', 'C1.x', src_indices=om.slicer[1, ...])
+        p.model.add_constraint('indep.x', indices=om.slicer[1, ...])
+
+        p.model.add_objective('C1.y')
+
+        p.setup()
+        p.run_model()
+
+        assert_near_equal(arr[tuple(p.model._responses['indep.x']['indices'])],
+                          np.array([10, 11, 12, 13]))
+        self.assertTrue(p.model._responses['indep.x']['indices'][0], 1)
+        self.assertTrue(p.model._responses['indep.x']['indices'][1], ...)
+
+    def test_om_slice_with_ellipsis_auto_ivc(self):
+
+        class MyComp(om.ExplicitComponent):
+            def setup(self):
+                self.add_input('x', np.ones(4))
+                self.add_output('y', 1.0)
+
+            def compute(self, inputs, outputs):
+                outputs['y'] = np.sum(inputs['x'])**2.0
+
+        # Add_constraint
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('C1', MyComp(), promotes_inputs=['x'])
+        p.model.add_constraint('x', indices=om.slicer[1, ...])
+
+        p.model.add_objective('C1.y')
+
+        p.setup()
+        p.set_val('x', arr, indices=om.slicer[1, ...])
+        p.run_model()
+
+        assert_near_equal(arr[tuple(p.model._responses['x']['indices'])],
+                          np.array([10, 11, 12, 13]))
+        self.assertTrue(p.model._responses['x']['indices'][0], 1)
+        self.assertTrue(p.model._responses['x']['indices'][1], ...)
+
+        # Add_response
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('C1', MyComp(), promotes_inputs=['x'])
+        p.model.add_response('x', type_='con', indices=om.slicer[1, ...])
+
+        p.model.add_objective('C1.y')
+
+        p.setup()
+        p.set_val('x', arr, indices=om.slicer[1, ...])
+        p.run_model()
+
+        assert_near_equal(arr[tuple(p.model._responses['x']['indices'])],
+                          np.array([10, 11, 12, 13]))
+        self.assertTrue(p.model._responses['x']['indices'][0], 1)
+        self.assertTrue(p.model._responses['x']['indices'][1], ...)
+
+        # Add_design_var
+        p = om.Problem()
+
+        arr = np.array([[0, 1, 2, 3],
+                        [10, 11, 12, 13]])
+
+        p.model.add_subsystem('C1', MyComp(), promotes_inputs=['x'])
+        p.model.add_design_var('x', indices=om.slicer[1, ...])
+
+        p.setup()
+        p.set_val('x', arr, indices=om.slicer[1, ...])
+        p.run_model()
+
+        assert_near_equal(arr[p.model._design_vars['x']['indices']],
+                          np.array([10, 11, 12, 13]))
+        self.assertTrue(p.model._design_vars['x']['indices'][0], 1)
+        self.assertTrue(p.model._design_vars['x']['indices'][1], ...)
 
     def test_promote_not_found1(self):
         p = om.Problem()

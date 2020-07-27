@@ -31,7 +31,7 @@ from openmdao.utils.coloring import _compute_coloring, Coloring, \
 import openmdao.utils.coloring as coloring_mod
 from openmdao.utils.general_utils import determine_adder_scaler, \
     format_as_float_or_array, ContainsAll, all_ancestors, \
-    simple_warning, make_set, match_includes_excludes, ensure_compatible, _is_slice
+    simple_warning, make_set, match_includes_excludes, ensure_compatible, _is_slice, _is_ellipsis
 from openmdao.approximation_schemes.complex_step import ComplexStep
 from openmdao.approximation_schemes.finite_difference import FiniteDifference
 from openmdao.utils.units import unit_conversion
@@ -2486,7 +2486,7 @@ class System(object):
 
         if indices is not None:
 
-            if isinstance(indices, slice):
+            if isinstance(indices, slice) or _is_ellipsis(indices):
                 pass
             # If given, indices must be a sequence
             elif not (isinstance(indices, Iterable) and
@@ -2597,7 +2597,7 @@ class System(object):
             msg = "{}: Constraint '{}' cannot be both equality and inequality."
             raise ValueError(msg.format(self.msginfo, name))
 
-        if isinstance(indices, slice):
+        if isinstance(indices, slice) or _is_ellipsis(indices):
             pass
         # If given, indices must be a sequence
         elif (indices is not None and not (
