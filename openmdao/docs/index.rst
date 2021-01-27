@@ -46,6 +46,19 @@ documentation of the arguments/options/settings for a specific method, Component
     theory_manual/index.rst
 
 
+Jupyter Notebook Examples:
+**************************
+
+Check out these wildly cool examples of pro level examples!
+
+
+.. toctree::
+    :maxdepth: 1
+    :name: jupyternotebooks
+
+    notebooks/index.rst
+
+
 Other Useful Docs
 *****************
 

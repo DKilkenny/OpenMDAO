@@ -52,7 +52,8 @@ extensions = [
     'embed_shell_cmd',
     'embed_bibtex',
     'embed_n2',
-    'tags'
+    'tags',
+    'nbsphinx'
 ]
 
 numpydoc_show_class_members = False
