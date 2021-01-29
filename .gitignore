@@ -13,6 +13,7 @@ openmdao/docs/_srcdocs/dev/
 openmdao/docs/_srcdocs/packages/
 openmdao/docs/_srcdocs/index.rst
 openmdao/docs/tags/
+openmdao/docs/notebooks/.ipynb_checkpoints/
 *.out
 doc_plot_*
 coloring.json
